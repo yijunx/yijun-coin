@@ -13,17 +13,11 @@ def update_hash(*args):
 
 
 class Block:
-    data = None
-    # data is like a gives b 5 dollars
-
-    hash = None
+    # initial value..
     nonce = 0
-    # used for proof of work
-
     previous_hash = "0" * 64
-    # 64 is the length of the sha256
 
-    def __init__(self, data, number=0) -> None:
+    def __init__(self, data, number: int = 0) -> None:
         self.data = data
         self.number = number
 
@@ -39,6 +33,9 @@ class Block:
         Nonce: {self.nonce}
 """
 
+    def __eq__(self, __value: object) -> bool:
+        return self.hash() == __value.hash()
+
 
 class Blockchain:
     difficulty = 4
@@ -50,21 +47,14 @@ class Blockchain:
             self.chain = []
 
     def add(self, block: Block):
-        # why not just use the block??
-        self.chain.append(
-            # {
-            #     "hash": block.hash(),
-            #     "previous_hash": block.previous_hash,
-            #     "number": block.number,
-            #     "data": block.data,
-            #     "nonce": block.nonce,
-            # }
-            block
-        )
+        self.chain.append(block)
+
+    def remove(self, block: Block):
+        self.chain.remove(block)
 
     def mine(self, block: Block):
         try:
-            block.previous_hash = self.chain[-1].hash()  # .get("hash")
+            block.previous_hash = self.chain[-1].hash()
         except IndexError:
             pass  # there is previous hash as 64 zeros already
 
@@ -75,6 +65,16 @@ class Blockchain:
             else:
                 block.nonce += 1
 
+    def isValid(self) -> bool:
+        for previous_block_index, block in enumerate(self.chain[1:]):
+            current_blocks_previous_hash = block.previous_hash
+            previous_blocks_current_hash = self.chain[previous_block_index].hash()
+            if previous_blocks_current_hash[: self.difficulty] != "0" * self.difficulty:
+                return False
+            if current_blocks_previous_hash != previous_blocks_current_hash:
+                return False
+        return True
+
 
 def main():
     blockchain = Blockchain()
@@ -83,8 +83,10 @@ def main():
     for i, data in enumerate(database):
         blockchain.mine(Block(data=data, number=i))
 
-    for block in blockchain.chain:
-        print(block)
+    # corrupt it
+    blockchain.chain[2].data = "newdata" # makes it not valid
+    # blockchain.chain[3].data = "newdata" # last block wont work..
+    print(blockchain.isValid())
 
 
 if __name__ == "__main__":
