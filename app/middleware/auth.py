@@ -7,8 +7,9 @@ import jwt
 from flask import Flask
 from werkzeug.wrappers import Request, Response
 
+import app.repositories.user as UserRepo
 from app.models.user import UserInJWT
-from app.utils.db import get_db as session_scope
+from app.utils.db import get_db
 
 logger = getLogger(__name__)
 
@@ -47,17 +48,18 @@ class AuthMiddleware:
 
         try:
             # well here we dont verify signature just for test purpose
+            # the production one should get the public cert and verify!
             actor = UserInJWT(**jwt.decode(token, options={"verify_signature": False}))
         except Exception as e:
             logger.warning(f"error in authentication: {e}")
             return self.unauth(environ, start_response)
 
         environ["actor"] = actor
-
-        # try:
-        #     UsersRepository.save_or_update_tpa_user_from_token(
-        # except Exception as e:
-        #     logger.error(e, exc_info=True)
+        with get_db() as db:
+            try:
+                UserRepo.save_or_update_user(db=db, user=actor)
+            except Exception as e:
+                logger.error(e, exc_info=True)
 
         return self.app(environ, start_response)
 

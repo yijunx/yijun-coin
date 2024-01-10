@@ -1,7 +1,7 @@
 import jwt
 from app.models.user import UserInJWT
 
-payload = UserInJWT(id="ads", name="haha").dict()
+payload = UserInJWT(id=9, name="haha", email="ad@rr.com").dict()
 token = jwt.encode(payload=payload, key="1234")
 print(f"{token=}")
 
