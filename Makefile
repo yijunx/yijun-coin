@@ -6,7 +6,7 @@ up:
 test:
 	@alembic upgrade head
 	@clear
-	@pytest  --durations=0 -v --cov-report html --cov=app
+	@pytest  --durations=0 -v --cov=app
 
 format:
 	@isort app/

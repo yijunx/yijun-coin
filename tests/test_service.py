@@ -1,44 +1,44 @@
+import json
+
 import app.services.blockchain as BlockChainService
-from app.models.blockchain import Blockchain
-
-BLOCKCHAIN = Blockchain(
-    **{
-        "difficulty": 4,
-        "chain": [
-            {
-                "nonce": 5670,
-                "previous_hash": "0000000000000000000000000000000000000000000000000000000000000000",
-                "data": "hello",
-                "number": 0,
-            },
-            {
-                "nonce": 36697,
-                "previous_hash": "0000407992cf0f808d13ff4b4d6dabc475c5d812c9f6b4dac175d9c0ed2d98dc",
-                "data": "whats up",
-                "number": 1,
-            },
-            {
-                "nonce": 33046,
-                "previous_hash": "00002b1d6482e9275d72b5d7c95dbafada307a8232cdc533f0cb932956c653e1",
-                "data": "good bye",
-                "number": 2,
-            },
-            {
-                "nonce": 13859,
-                "previous_hash": "0000f9e1f72662e5c593e8878ac7f49b6c983d4ec97d223e886435fd5690c47f",
-                "data": "yoyo",
-                "number": 3,
-            },
-        ],
-    }
-)
+import app.services.transaction as TransactionService
+import app.services.user as UserService
+from app.models.transaction import Transaction
+from app.models.user import UserInJWT
 
 
-def test_sync_chain():
-    BlockChainService.sync_blockchain(blockchain=BLOCKCHAIN)
+def make_user(id: int):
+    return UserInJWT(id=id, name=f"tom{id}", email=f"tom{id}@tom.com")
+
+
+def test_create_or_update_user():
+    for i in range(3):
+        UserService.create_user(user=make_user(id=i))
+
+
+def test_cleanup_blockchain():
+    BlockChainService.delete_blockchain()
+
+
+def test_create_transaction():
+    # back gives user0 100
+    TransactionService.send_money(
+        transaction=Transaction(sender_id=None, recipient_id=0, amount_in_cents=100)
+    )
+
+    TransactionService.send_money(
+        transaction=Transaction(sender_id=0, recipient_id=1, amount_in_cents=50)
+    )
+
+    TransactionService.send_money(
+        transaction=Transaction(sender_id=1, recipient_id=2, amount_in_cents=20)
+    )
 
 
 def test_get_chain():
     blockchain = BlockChainService.get_blockchain()
-    assert blockchain.chain[3].nonce == BLOCKCHAIN.chain[3].nonce
-    assert blockchain.isValid()
+    assert blockchain.get_balance_of_a_user(user_id=0) == 50
+    assert blockchain.get_balance_of_a_user(user_id=1) == 30
+    assert blockchain.get_balance_of_a_user(user_id=2) == 20
+
+    assert Transaction(**json.loads(blockchain.chain[-1].data)).sender_id == 1
