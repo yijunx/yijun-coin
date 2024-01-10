@@ -91,8 +91,10 @@ def main():
     for i, data in enumerate(database):
         blockchain.mine(Block(data=data, number=i))
 
+    print(blockchain.dict())
+
     # corrupt it
-    blockchain.chain[2].data = "newdata"  # makes it not valid
+    # blockchain.chain[2].data = "newdata"  # makes it not valid
     # blockchain.chain[3].data = "newdata" # last block wont work..
     print(blockchain.isValid())
 

@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 
-from app.models.sqlalchemy.models import UserORM
+from app.models.sqlalchemy import UserORM
 from app.models.user import UserInJWT
 
 
@@ -16,3 +16,12 @@ def save_or_update_user(db: Session, user: UserInJWT):
         db.add(db_user)
         db.flush()
     return db_user
+
+
+def get_one(db: Session, user_id: int):
+    db_user: UserORM = db.query(UserORM).filter(UserORM.id == user_id).first()
+    if db_user:
+        return db_user
+    else:
+        raise Exception("User does not exist")
+
