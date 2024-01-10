@@ -1,4 +1,5 @@
 from hashlib import sha256
+from pydantic import BaseModel
 
 
 def update_hash(*args):
@@ -12,14 +13,16 @@ def update_hash(*args):
     return h.hexdigest()
 
 
-class Block:
+class Block(BaseModel):
     # initial value..
-    nonce = 0
-    previous_hash = "0" * 64
+    nonce: int = 0
+    previous_hash: str = "0" * 64
+    data: str
+    number: int = 0
 
-    def __init__(self, data, number: int = 0) -> None:
-        self.data = data
-        self.number = number
+    # def __init__(self, data, number: int = 0) -> None:
+    #     self.data = data
+    #     self.number = number
 
     def hash(self):
         return update_hash(self.previous_hash, self.number, self.data, self.nonce)
@@ -36,15 +39,19 @@ class Block:
     def __eq__(self, __value: "Block") -> bool:
         return self.hash() == __value.hash()
 
+    class Config:
+        orm_mode = True
 
-class Blockchain:
-    difficulty = 4
 
-    def __init__(self, chain: list[Block] = None) -> None:
-        if chain:
-            self.chain = chain
-        else:
-            self.chain = []
+class Blockchain(BaseModel):
+    difficulty: int = 4
+    chain: list[Block] = []
+
+    # def __init__(self, chain: list[Block] = None) -> None:
+    #     if chain:
+    #         self.chain = chain
+    #     else:
+    #         self.chain = []
 
     def add(self, block: Block):
         self.chain.append(block)

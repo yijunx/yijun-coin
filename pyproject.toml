@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "yijun-coin"
+name = "app"
 version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
@@ -8,6 +8,10 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 flask = "^3.0.0"
+alembic = "^1.13.1"
+pydantic = {version = "1.10.7", extras = ["dotenv"]}
+psycopg2 = "^2.9.9"
+gunicorn = "^21.2.0"
 
 
 [tool.poetry.group.dev.dependencies]
