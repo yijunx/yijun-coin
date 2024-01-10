@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 
+from app.models.exception import CustomException
 from app.models.sqlalchemy import UserORM
 from app.models.user import UserInJWT
 
@@ -23,5 +24,4 @@ def get_one(db: Session, user_id: int):
     if db_user:
         return db_user
     else:
-        raise Exception("User does not exist")
-
+        raise CustomException(http_code=404, message="User does not exist")

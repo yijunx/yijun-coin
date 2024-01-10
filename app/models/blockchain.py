@@ -1,6 +1,9 @@
+import json
 from hashlib import sha256
 
 from pydantic import BaseModel
+
+from app.models.transaction import Transaction
 
 
 def update_hash(*args):
@@ -82,6 +85,16 @@ class Blockchain(BaseModel):
             if current_blocks_previous_hash != previous_blocks_current_hash:
                 return False
         return True
+
+    def get_balance_of_a_user(self, user_id: int) -> int:
+        balance = 0
+        for block in self.chain:
+            transaction = Transaction(**json.loads(block.data))
+            if user_id == transaction.sender_id:
+                balance -= transaction.amount_in_cents
+            if user_id == transaction.recipient_id:
+                balance += transaction.amount_in_cents
+        return balance
 
 
 def main():

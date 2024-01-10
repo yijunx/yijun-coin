@@ -1,6 +1,6 @@
-from app.utils.db import get_db
-from app.models.blockchain import Blockchain, Block
 import app.repositories.blockchain as BlockchainRepo
+from app.models.blockchain import Block, Blockchain
+from app.utils.db import get_db
 
 
 def get_blockchain() -> Blockchain:
@@ -24,4 +24,3 @@ def sync_blockchain(blockchain: Blockchain):
 def delete_blockchain() -> None:
     with get_db() as db:
         BlockchainRepo.delete_all(db=db)
-

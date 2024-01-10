@@ -309,6 +309,21 @@ async = ["asgiref (>=3.2)"]
 dotenv = ["python-dotenv"]
 
 [[package]]
+name = "flask-pydantic"
+version = "0.11.0"
+description = "Flask extension for integration with Pydantic library"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "Flask-Pydantic-0.11.0.tar.gz", hash = "sha256:eef679b24e34ffb02e24e1d998ac023007aa2b531927fdc2f9b8114a12c19bb4"},
+    {file = "Flask_Pydantic-0.11.0-py3-none-any.whl", hash = "sha256:c5a6283d1227631683ceb72a41f652036829476fbb6e7b6ccef8cae8ed51ebab"},
+]
+
+[package.dependencies]
+Flask = "*"
+pydantic = ">=1.7"
+
+[[package]]
 name = "gevent"
 version = "23.9.1"
 description = "Coroutine-based network library"
@@ -1038,4 +1053,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "0547452ee32603c576805adb2367e6b2e30e18dbf2daa1de6f7878479617c5be"
+content-hash = "cb667ede6ddff944c639f74b5756b09346e9e6224ee57223b0c94d8683a85c05"
